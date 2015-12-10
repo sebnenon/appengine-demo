@@ -39,7 +39,7 @@ public class UsersServlet extends JsonServlet {
             throw new ApiException(400, "invalidRequest", "Invalid JSON body");
         }
 
-        // Perform all the usul checkings
+        // Perform all the usual checkings
         if (!ValidationUtils.validateLogin(user.login)) {
             throw new ApiException(400, "invalidLogin", "Login did not match the specs");
         }
@@ -60,7 +60,7 @@ public class UsersServlet extends JsonServlet {
         // Explicitly give a fresh id to the user (we need it for next step)
         user.id = UsersRepository.allocateNewId();
 
-        // TODO: find a solution to receive an store profile pictures
+        // TODO: find a solution to receive and store profile pictures
         // Simulate an avatar image using Gravatar API
         user.avatar = "http://www.gravatar.com/avatar/" + MD5Utils.md5Hex(user.email) + "?d=wavatar";
 
