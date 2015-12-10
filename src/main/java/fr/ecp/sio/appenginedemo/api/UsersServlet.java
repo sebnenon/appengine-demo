@@ -23,7 +23,9 @@ public class UsersServlet extends JsonServlet {
     protected List<User> doGet(HttpServletRequest req) throws ServletException, IOException, ApiException {
         // TODO: define parameters to search/filter users by login, with limit, order...
         // TODO: define parameters to get the followings and the followers of a user given its id
-        return UsersRepository.getUsers();
+        // SN: added ".users" to metch the return type of the method. For the sake of genericity
+        // the return type of getUsers() has been left as is.
+        return UsersRepository.getUsers().users;
     }
 
     // A POST request can be used to create a user
