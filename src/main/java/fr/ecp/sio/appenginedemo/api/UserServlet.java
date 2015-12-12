@@ -57,7 +57,7 @@ public class UserServlet extends JsonServlet {
 
     // This is a method that gets the id or the "me" in the request and returns the id
     //TODO: refactor to externalize and set generic for the followers/following case
-    private long getUserIdFromReq(HttpServletRequest req) throws ApiException {
+    protected static long getUserIdFromReq(HttpServletRequest req) throws ApiException {
         // Here we define patterns in order to check the format of the id
         final String ID_PATTERN = "^[0-9]*$";
         final String ME_PATTERN = "^[Mm][Ee]$";
