@@ -8,15 +8,15 @@
         It allows a far richer control over URL patterns and rewriting before going to the servlets.
     -->
     <rule>
-        <!-- URLs like /users/78264/followed will be processed as /follow?followedBy=78264 -->
+        <!-- URLs like /users/78264/followed will be processed as /users?followedBy=78264 -->
         <from>/users/(\w+)/followed</from>
-        <to>/follow?followedBy=$1</to>
+        <to>/users?followedBy=$1</to>
     </rule>
 
     <rule>
-        <!-- URLs like /users/78264/followers will be processed as /follow?followerOf=78264 -->
+        <!-- URLs like /users/78264/followers will be processed as /users?followerOf=78264 -->
         <from>/users/(\w+)/followers</from>
-        <to>/follow?followerOf=$1</to>
+        <to>/users?followerOf=$1</to>
     </rule>
 
 </urlrewrite>

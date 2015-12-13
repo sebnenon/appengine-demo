@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import static fr.ecp.sio.appenginedemo.data.UsersRepository.getUser;
+
 /**
  * A servlet to handle all the requests on a specific user
  * All requests with path matching "/users/*" where * is the id of the user are handled here.
@@ -37,12 +39,41 @@ public class UserServlet extends JsonServlet {
 
     // A POST request could be used by a user to edit its own account
     // It could also handle relationship parameters like "followed=true"
+    /**
+     * permits to follow/unfollow if currentuser is connected
+     * @param req the request object
+     * @return the followed user or the current user
+     * @throws ServletException, IOException, ApiException
+     */
     @Override
     protected User doPost(HttpServletRequest req) throws ServletException, IOException, ApiException {
-        // TODO: Get the user as below
+        // DONE: Get the user as below
         // TODO: Apply some changes on the user (after checking for the connected user)
-        // TODO: Handle special parameters like "followed=true" to create or destroy relationships
+        // DONE: Handle special parameters like "followed=true" to create or destroy relationships
         // TODO: Return the modified user
+        User currentUser = getAuthenticatedUser(req);
+        if (currentUser == null || currentUser.id == 0) {
+            throw new ApiException(404, "userNotFound", "User not found");
+        }
+        // first step: manage followings
+        String follow = req.getParameter("followed");
+        if (follow != null) {
+            final String T_PATTERN = "^[tT]rue$";
+            final String F_PATTERN = "^[fF]alse$";
+            User followedUser = getUser(UserServlet.getUserIdFromReq(req));
+            if (followedUser == null || followedUser.id == 0) {
+                throw new ApiException(404, "userNotFound", "User to follow not found");
+            }
+            if (follow.matches(T_PATTERN)) {
+                UsersRepository.setFollowRelationship(currentUser.id, followedUser.id, true);
+                return followedUser;
+            }
+            if (follow.matches(F_PATTERN)) {
+                UsersRepository.setFollowRelationship(currentUser.id, followedUser.id, false);
+                return currentUser;
+            }
+        }
+
         return null;
     }
 

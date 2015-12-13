@@ -11,8 +11,8 @@
     <properties>
         <app.id>your-app-id</app.id>
         <app.version>1</app.version>
-        <appengine.version>1.9.28</appengine.version>
-        <gcloud.plugin.version>2.0.9.84.v20151028</gcloud.plugin.version>
+        <appengine.version>1.9.30</appengine.version>
+        <gcloud.plugin.version>2.0.9.89.v20151202</gcloud.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     </properties>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
-            <version>4.0.3</version>
+            <version>4.0.4</version>
         </dependency>
 
     </dependencies>

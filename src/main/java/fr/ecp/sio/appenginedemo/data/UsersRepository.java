@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
+import fr.ecp.sio.appenginedemo.api.ApiException;
 import fr.ecp.sio.appenginedemo.model.Follower;
 import fr.ecp.sio.appenginedemo.model.User;
 
@@ -22,6 +23,7 @@ public class UsersRepository {
     // This is required per Objectify documentation.
     static {
         ObjectifyService.register(User.class);
+        ObjectifyService.register(Follower.class);
     }
 
     public static User getUserByLogin(final String login) {
@@ -52,6 +54,7 @@ public class UsersRepository {
                 .now();
     }
 
+
     public static UsersList getUsers() {
         return new UsersList(
                 ObjectifyService.ofy()
@@ -75,11 +78,22 @@ public class UsersRepository {
                 .getId();
     }
 
+    // DDONE: delete also the relationships
     public static void deleteUser(long id) {
         ObjectifyService.ofy()
                 .delete()
                 .type(User.class)
                 .id(id)
+                .now();
+
+        ObjectifyService.ofy()
+                .delete()
+                .keys(ObjectifyService.ofy().load().type(Follower.class).filter("followedBy", id).keys().list())
+                .now();
+
+        ObjectifyService.ofy()
+                .delete()
+                .keys(ObjectifyService.ofy().load().type(Follower.class).filter("followerOf", id).keys().list())
                 .now();
     }
 
@@ -102,23 +116,23 @@ public class UsersRepository {
 
     /**
      * Get the users following current user, calls getFollow
-     * @param id id of the followed user
+     * @param id id of the current user
      * @param limit number of results to return
      * @param cursor position to start from in the results
      * @return a UsersList
      */
-    public static UsersList getUserFollowers(long id, int limit, String cursor) {
+    public static UsersList getFollowers(long id, int limit, String cursor) {
         return getFollow(id,limit,cursor,"followedId");
     }
 
     /**
      * Get the users followed by current user, calls getFollow
-     * @param id id of the followed user
+     * @param id id of the current user
      * @param limit number of results to return
      * @param cursor position to start from in the results
      * @return a UsersList
      */
-    public static UsersList getUserFollowed(long id, int limit, String cursor) {
+    public static UsersList getUsersFollowed(long id, int limit, String cursor) {
         return getFollow(id,limit,cursor,"followerId");
     }
 
@@ -153,7 +167,10 @@ public class UsersRepository {
         // loop on results using iterator
         while (iterator.hasNext()) {
             Follower fol = iterator.next();
-            results.add(getUser(fol.id));
+            if (qFilter == "followedId")
+                results.add(getUser(fol.followerId));
+            else
+                results.add(getUser(fol.followedId));
             genCursor = true;
         }
 
@@ -173,25 +190,27 @@ public class UsersRepository {
      * @param followedId id of the followed
      * @param followed boolean. true: follow, false: unfollow
      */
-    public static void setUserFollowed(long followerId, long followedId, boolean followed) {
+    public static void setFollowRelationship(long followerId, long followedId, boolean followed) throws ApiException {
         // try to get this relationship
         Follower fol = ObjectifyService.ofy()
                 .load()
                 .type(Follower.class)
-                .filter("follower", followerId)
-                .filter("followed", followedId)
+                .filter("followerId", followerId)
+                .filter("followedId", followedId)
                 .first()
                 .now();
         // it doesn't exist and we wan't to create it
-        if (followed && fol == null) {
-            fol.followedId = followedId;
-            fol.followerId = followerId;
+        if (followed == true && fol == null) {
+            Follower tmpFol = new Follower();
+            tmpFol.followedId = followedId;
+            tmpFol.followerId = followerId;
+            tmpFol.id = new ObjectifyFactory().allocateId(Follower.class).getId();
             ObjectifyService.ofy()
                     .save()
-                    .entity(fol)
+                    .entity(tmpFol)
                     .now();
-        // it exists and we wan't to delete it
-        } else if (!followed && fol != null){
+            // it exists and we wan't to delete it
+        } else if (followed == false && fol != null){
             ObjectifyService.ofy()
                     .delete()
                     .entity(fol)

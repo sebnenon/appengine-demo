@@ -11,20 +11,37 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
+
 
 /**
  * A servlet to handle all the requests on a list of users
  * All requests on the exact path "/users" are handled here.
  */
 public class UsersServlet extends JsonServlet {
+    private static final int LIST_LIMIT = 50;
+    private static final Logger LOG = Logger.getLogger(UsersServlet.class.getSimpleName());
 
-    // A GET request should return a list of users
+    /**
+     * This method returns the list of followers/followed users, depending on the arguments of the URI
+     * @param req: the request object
+     * @return a List<User>
+     * @throws ServletException, IOException, ApiException
+     */
     @Override
     protected List<User> doGet(HttpServletRequest req) throws ServletException, IOException, ApiException {
-        // TODO: define parameters to search/filter users by login, with limit, order...
-        // TODO: define parameters to get the followings and the followers of a user given its id
-        // SN: added ".users" to metch the return type of the method. For the sake of genericity
-        // the return type of getUsers() has been left as is.
+        // DONE: define parameters to search/filter users by login, with limit, order...
+        // DONE: define parameters to get the followings and the followers of a user given its id
+        String followedBy = req.getParameter("followedBy");
+        String followerOf = req.getParameter("followerOf");
+        String cursor = req.getParameter("continuationCursor");
+        LOG.info(followerOf+followedBy+cursor);
+        if(followerOf != null && ValidationUtils.validateId(followerOf)){
+            return UsersRepository.getFollowers(Long.parseLong(followerOf), LIST_LIMIT, cursor).users;
+        }
+        if(followedBy != null && ValidationUtils.validateId(followedBy)){
+            return UsersRepository.getUsersFollowed(Long.parseLong(followedBy), LIST_LIMIT, cursor).users;
+        }
         return UsersRepository.getUsers().users;
     }
 

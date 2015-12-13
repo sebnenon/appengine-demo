@@ -38,16 +38,6 @@
         Generic mappings (with "/*") must go before their exact-matching counterpart.
     -->
 
-    <!-- The follow servlet -->
-
-    <servlet>
-        <servlet-name>follow</servlet-name>
-        <servlet-class>fr.ecp.sio.appenginedemo.api.FollowServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>follow</servlet-name>
-        <url-pattern>follow/*</url-pattern>
-    </servlet-mapping>
 
 
     <servlet>
