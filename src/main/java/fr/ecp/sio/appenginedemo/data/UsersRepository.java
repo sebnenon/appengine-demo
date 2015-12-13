@@ -26,6 +26,7 @@ public class UsersRepository {
         ObjectifyService.register(Follower.class);
     }
 
+    // TODO: doc
     public static User getUserByLogin(final String login) {
         // We can add filter of a property if this property has the @Index annotation in the model class
         // first() returns only one result
@@ -37,6 +38,7 @@ public class UsersRepository {
                 .now();
     }
 
+    // TODO: doc
     public static User getUserByEmail(final String email) {
         return ObjectifyService.ofy()
                 .load()
@@ -46,6 +48,7 @@ public class UsersRepository {
                 .now();
     }
 
+    // TODO: doc
     public static User getUser(long id) {
         return ObjectifyService.ofy()
                 .load()
@@ -54,7 +57,7 @@ public class UsersRepository {
                 .now();
     }
 
-
+    // TODO: doc
     public static UsersList getUsers() {
         return new UsersList(
                 ObjectifyService.ofy()
@@ -65,11 +68,13 @@ public class UsersRepository {
         );
     }
 
+    // TODO: doc
     public static long allocateNewId() {
         // Sometime we need to allocate an id before persisting, the library allows it
         return new ObjectifyFactory().allocateId(User.class).getId();
     }
 
+    // TODO: doc
     public static void saveUser(User user) {
         user.id = ObjectifyService.ofy()
                 .save()
@@ -78,7 +83,8 @@ public class UsersRepository {
                 .getId();
     }
 
-    // DDONE: delete also the relationships
+    // DONE: delete also the relationships
+    // TODO: doc
     public static void deleteUser(long id) {
         ObjectifyService.ofy()
                 .delete()
@@ -97,6 +103,7 @@ public class UsersRepository {
                 .now();
     }
 
+    // TODO: doc
     public static class UsersList {
 
         public final List<User> users;
@@ -200,7 +207,7 @@ public class UsersRepository {
                 .first()
                 .now();
         // it doesn't exist and we wan't to create it
-        if (followed == true && fol == null) {
+        if (followed && (fol == null)) {
             Follower tmpFol = new Follower();
             tmpFol.followedId = followedId;
             tmpFol.followerId = followerId;
@@ -210,7 +217,7 @@ public class UsersRepository {
                     .entity(tmpFol)
                     .now();
             // it exists and we wan't to delete it
-        } else if (followed == false && fol != null){
+        } else if (!followed && (fol != null)){
             ObjectifyService.ofy()
                     .delete()
                     .entity(fol)

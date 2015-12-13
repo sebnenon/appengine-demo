@@ -11,6 +11,7 @@ public class ApiException extends Exception {
 
     private Error mError;
 
+    // TODO: doc
     public ApiException(int status, String code, String message) {
         super(message);
         // When the exception is created, prepare an Error object that will be sent to the client

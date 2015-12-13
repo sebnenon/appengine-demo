@@ -18,6 +18,7 @@ public class MessagesRepository {
         ObjectifyService.register(Message.class);
     }
 
+    // TODO: doc
     public static Message getMessage(long id) {
         // The Objectify library uses common syntax that helps chaining calls (like the Builder pattern)
         // Here we get a static Objectify service instance (ofy), create a query (load), specify a kind of desired results (type) and an id, then execute synchronously with now()
@@ -28,6 +29,7 @@ public class MessagesRepository {
                 .now();
     }
 
+    // TODO: doc
     public static List<Message> getMessages() {
         // Same as above, without id, returns multiple results as a list
         return ObjectifyService.ofy()
@@ -36,6 +38,7 @@ public class MessagesRepository {
                 .list();
     }
 
+    // TODO: doc
     public static void insertMessage(Message message) {
         // Persisting an entity is just a save() query
         message.id = ObjectifyService.ofy()
@@ -45,6 +48,7 @@ public class MessagesRepository {
                 .getId();
     }
 
+    // TODO: doc
     public static void deleteMessage(long id) {
         ObjectifyService.ofy()
                 .delete()

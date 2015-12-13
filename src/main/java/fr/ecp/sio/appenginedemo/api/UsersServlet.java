@@ -11,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 
 /**
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
  */
 public class UsersServlet extends JsonServlet {
     private static final int LIST_LIMIT = 50;
-    private static final Logger LOG = Logger.getLogger(UsersServlet.class.getSimpleName());
 
     /**
      * This method returns the list of followers/followed users, depending on the arguments of the URI
@@ -35,7 +33,6 @@ public class UsersServlet extends JsonServlet {
         String followedBy = req.getParameter("followedBy");
         String followerOf = req.getParameter("followerOf");
         String cursor = req.getParameter("continuationCursor");
-        LOG.info(followerOf+followedBy+cursor);
         if(followerOf != null && ValidationUtils.validateId(followerOf)){
             return UsersRepository.getFollowers(Long.parseLong(followerOf), LIST_LIMIT, cursor).users;
         }
