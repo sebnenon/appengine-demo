@@ -19,6 +19,9 @@ public class User {
     public String login;
 
     public String avatar;
+
+    @Index
+    public String blobkey;
     public String coverPicture;
 
     @Index

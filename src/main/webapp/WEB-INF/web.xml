@@ -38,6 +38,14 @@
         Generic mappings (with "/*") must go before their exact-matching counterpart.
     -->
 
+    <servlet>
+        <servlet-name>image</servlet-name>
+        <servlet-class>fr.ecp.sio.appenginedemo.api.ImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>image</servlet-name>
+        <url-pattern>image/*</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>

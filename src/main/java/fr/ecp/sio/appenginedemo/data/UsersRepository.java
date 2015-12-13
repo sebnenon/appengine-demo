@@ -69,9 +69,31 @@ public class UsersRepository {
     }
 
     // TODO: doc
+    public static String urlFromBlob(String blob) {
+        User usr = ObjectifyService.ofy()
+                .load()
+                .type(User.class)
+                .filter("blobkey",blob)
+                .first()
+                .now();
+        return usr.avatar;
+    }
+
+    // TODO: doc
     public static long allocateNewId() {
         // Sometime we need to allocate an id before persisting, the library allows it
         return new ObjectifyFactory().allocateId(User.class).getId();
+    }
+
+    // TODO: doc
+    public static void updateAvatar(User user, String blobkey, String url) {
+        user.blobkey = blobkey;
+        user.avatar = url;
+        user.id = ObjectifyService.ofy()
+                .save()
+                .entity(user)
+                .now()
+                .getId();
     }
 
     // TODO: doc

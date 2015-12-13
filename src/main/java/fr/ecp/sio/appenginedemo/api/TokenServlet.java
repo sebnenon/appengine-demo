@@ -2,9 +2,9 @@ package fr.ecp.sio.appenginedemo.api;
 
 import com.google.gson.JsonObject;
 import fr.ecp.sio.appenginedemo.data.UsersRepository;
+import fr.ecp.sio.appenginedemo.model.User;
 import fr.ecp.sio.appenginedemo.utils.TokenUtils;
 import fr.ecp.sio.appenginedemo.utils.ValidationUtils;
-import fr.ecp.sio.appenginedemo.model.User;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.servlet.ServletException;

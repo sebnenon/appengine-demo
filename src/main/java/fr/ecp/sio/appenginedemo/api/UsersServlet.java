@@ -81,6 +81,8 @@ public class UsersServlet extends JsonServlet {
         // Hash the user password with the id a a salt
         user.password = DigestUtils.sha256Hex(user.password + user.id);
 
+        user.blobkey = null;
+
         // Persist the user into the repository
         UsersRepository.saveUser(user);
 
