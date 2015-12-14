@@ -68,12 +68,12 @@ public class UsersRepository {
         );
     }
 
-    // TODO: doc
-    public static String urlFromBlob(String blob) {
+    // TODO: doc, verify if usefull
+    public static String getAvatarFromBlob(String blob) {
         User usr = ObjectifyService.ofy()
                 .load()
                 .type(User.class)
-                .filter("blobkey",blob)
+                .filter("blobkey", blob)
                 .first()
                 .now();
         return usr.avatar;
@@ -125,53 +125,59 @@ public class UsersRepository {
                 .now();
     }
 
-    // TODO: doc
-    public static class UsersList {
-
-        public final List<User> users;
-        public final String cursor;
-
-        private UsersList(List<User> users, String cursor) {
-            this.users = users;
-            this.cursor = cursor;
-        }
-
+    //TODO: doc
+    public static User obfuscatedUser(User user) {
+        User obUser = new User();
+        obUser.id = user.id;
+        obUser.login = user.login;
+        obUser.avatar = user.avatar;
+        return obUser;
     }
-
-    // Here starts my part =============================================================================================
-
-
-
 
     /**
      * Get the users following current user, calls getFollow
-     * @param id id of the current user
-     * @param limit number of results to return
+     *
+     * @param id     id of the current user
+     * @param limit  number of results to return
      * @param cursor position to start from in the results
      * @return a UsersList
      */
     public static UsersList getFollowers(long id, int limit, String cursor) {
-        return getFollow(id,limit,cursor,"followedId");
+        return getFollow(id, limit, cursor, "followedId");
     }
+
+    // Here starts my part =============================================================================================
 
     /**
      * Get the users followed by current user, calls getFollow
-     * @param id id of the current user
-     * @param limit number of results to return
+     *
+     * @param id     id of the current user
+     * @param limit  number of results to return
      * @param cursor position to start from in the results
      * @return a UsersList
      */
     public static UsersList getUsersFollowed(long id, int limit, String cursor) {
-        return getFollow(id,limit,cursor,"followerId");
+        return getFollow(id, limit, cursor, "followerId");
     }
 
+    public static boolean isFollowerOf(long followerId, long followedId) {
+        Follower fol = ObjectifyService.ofy()
+                .load()
+                .type(Follower.class)
+                .filter("followerId", followerId)
+                .filter("followedId", followedId)
+                .first()
+                .now();
+        return fol != null;
+    }
 
     /**
      * This method does the job. It fetches a user list and permits the pagination through
      * limit and cursor parameters
-     * @param id id of the followed user
-     * @param limit number of results to return
-     * @param cursor position to start from in the results
+     *
+     * @param id      id of the followed user
+     * @param limit   number of results to return
+     * @param cursor  position to start from in the results
      * @param qFilter the string selecting between followers and followed
      * @return a UsersList
      */
@@ -196,7 +202,7 @@ public class UsersRepository {
         // loop on results using iterator
         while (iterator.hasNext()) {
             Follower fol = iterator.next();
-            if (qFilter == "followedId")
+            if (qFilter.equals("followedId"))
                 results.add(getUser(fol.followerId));
             else
                 results.add(getUser(fol.followedId));
@@ -209,15 +215,15 @@ public class UsersRepository {
             curs = iterator.getCursor().toWebSafeString();
         }
 
-        return new UsersList(results,curs);
+        return new UsersList(results, curs);
     }
-
 
     /**
      * Permits to follow/unfollow
+     *
      * @param followerId id of the follower
      * @param followedId id of the followed
-     * @param followed boolean. true: follow, false: unfollow
+     * @param followed   boolean. true: follow, false: unfollow
      */
     public static void setFollowRelationship(long followerId, long followedId, boolean followed) throws ApiException {
         // try to get this relationship
@@ -239,11 +245,24 @@ public class UsersRepository {
                     .entity(tmpFol)
                     .now();
             // it exists and we wan't to delete it
-        } else if (!followed && (fol != null)){
+        } else if (!followed && (fol != null)) {
             ObjectifyService.ofy()
                     .delete()
                     .entity(fol)
                     .now();
+        }
+
+    }
+
+    // TODO: doc
+    public static class UsersList {
+
+        public final List<User> users;
+        public final String cursor;
+
+        private UsersList(List<User> users, String cursor) {
+            this.users = users;
+            this.cursor = cursor;
         }
 
     }

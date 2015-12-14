@@ -18,6 +18,7 @@ import java.util.List;
  * All requests on the exact path "/users" are handled here.
  */
 public class UsersServlet extends JsonServlet {
+
     private static final int LIST_LIMIT = 50;
 
     /**
@@ -28,8 +29,6 @@ public class UsersServlet extends JsonServlet {
      */
     @Override
     protected List<User> doGet(HttpServletRequest req) throws ServletException, IOException, ApiException {
-        // DONE: define parameters to search/filter users by login, with limit, order...
-        // DONE: define parameters to get the followings and the followers of a user given its id
         String followedBy = req.getParameter("followedBy");
         String followerOf = req.getParameter("followerOf");
         String cursor = req.getParameter("continuationCursor");
@@ -46,7 +45,6 @@ public class UsersServlet extends JsonServlet {
     // We can use it as a "register" endpoint; in this case we return a token to the client.
     @Override
     protected String doPost(HttpServletRequest req) throws ServletException, IOException, ApiException {
-
         // The request should be a JSON object describing a new user
         User user = getJsonRequestBody(req, User.class);
         if (user == null) {
@@ -74,8 +72,9 @@ public class UsersServlet extends JsonServlet {
         // Explicitly give a fresh id to the user (we need it for next step)
         user.id = UsersRepository.allocateNewId();
 
-        // TODO: find a solution to receive and store profile pictures
-        // Simulate an avatar image using Gravatar API
+        /* Our strategy is to create a profile with a default avatar and modify it later,
+          or, user side, redirect to a picture submission activity
+        * Simulate an avatar image using Gravatar API */
         user.avatar = "http://www.gravatar.com/avatar/" + MD5Utils.md5Hex(user.email) + "?d=wavatar";
 
         // Hash the user password with the id a a salt

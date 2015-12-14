@@ -25,9 +25,55 @@ import java.util.regex.Pattern;
  */
 public class JsonServlet extends HttpServlet {
 
+
     // A constant Pattern, a regex class used to validate and parse the authorization header.
     // The Pattern is built from the regex string using the static method compile(), then it is ready to be used.
     protected static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("Bearer (.+)");
+
+    // This method can be used by our sub-servlets to get the User sending the request
+    // We parse the response header, check it against our repository and return it
+    protected static User getAuthenticatedUser(HttpServletRequest req) throws ApiException {
+        // Client applications are supposed to send their token in a "Authorization" header
+        String auth = req.getHeader("Authorization");
+        if (auth != null) {
+            // We use our static pattern to both validate the pattern and get the token
+            // We create a Matcher that can be used (single use) to validate an input string
+            Matcher m = AUTHORIZATION_PATTERN.matcher(auth);
+            if (!m.matches()) {
+                // The header is not well formatted (should be "Bearer xxxxxxxx")
+                throw new ApiException(401, "invalidAuthorization", "Invalid authorization header format");
+            }
+            try {
+                // Our tokens actually are just and encrypted id, lets decrypt it
+                // m.group(1) is the first value that was captured by the regex pattern (the token itself)
+                long id = TokenUtils.parseToken(m.group(1));
+                // We have the id, lets simply get the user from our repository
+                return UsersRepository.getUser(id);
+            } catch (SignatureException e) {
+                // The decryption of the token failed!
+                throw new ApiException(401, "invalidAuthorization", "Invalid token");
+            }
+        } else {
+            return null;
+        }
+    }
+
+    // This method can be used by our sub-servlets to get the request JSON body as a JsonObject (generic parsing)
+    protected static JsonObject getJsonRequestBody(HttpServletRequest req) throws IOException {
+        // Here again we simply rely on the Gson library, giving it a Reader opened on the request InputStream
+        // The request is assumed to be a JSON object { ... } with this method
+        return new JsonParser()
+                .parse(req.getReader())
+                .getAsJsonObject();
+    }
+
+    // This method can be used by our sub-servlets to get the request JSON body as an object
+    // It will parse the request and convert it to an instance of the specified type
+    // This is a generic method: the return type T depends on ("is bound to") the second parameter
+    protected static <T> T getJsonRequestBody(HttpServletRequest req, Class<T> type) throws IOException {
+        // We used the Gson library for parsing
+        return GsonFactory.getGson().fromJson(req.getReader(), type);
+    }
 
     // All servlets behave the same: they receive request (req) and are supposed to write to the response (resp).
     // Note that the method does not return the response, instead it can write to (like a stream).
@@ -97,51 +143,6 @@ public class JsonServlet extends HttpServlet {
         // After the headers are written, we can go for the response body
         // We rely on the Gson library, giving it the object and a Writer opened on the response OutputStream
         GsonFactory.getGson().toJson(response, resp.getWriter());
-    }
-
-    // This method can be used by our sub-servlets to get the User sending the request
-    // We parse the response header, check it against our repository and return it
-    protected static User getAuthenticatedUser(HttpServletRequest req) throws ApiException {
-        // Client applications are supposed to send their token in a "Authorization" header
-        String auth = req.getHeader("Authorization");
-        if (auth != null) {
-            // We use our static pattern to both validate the pattern and get the token
-            // We create a Matcher that can be used (single use) to validate an input string
-            Matcher m = AUTHORIZATION_PATTERN.matcher(auth);
-            if (!m.matches()) {
-                // The header is not well formatted (should be "Bearer xxxxxxxx")
-                throw new ApiException(401, "invalidAuthorization", "Invalid authorization header format");
-            }
-            try {
-                // Our tokens actually are just and encrypted id, lets decrypt it
-                // m.group(1) is the first value that was captured by the regex pattern (the token itself)
-                long id = TokenUtils.parseToken(m.group(1));
-                // We have the id, lets simply get the user from our repository
-                return UsersRepository.getUser(id);
-            } catch (SignatureException e) {
-                // The decryption of the token failed!
-                throw new ApiException(401, "invalidAuthorization", "Invalid token");
-            }
-        } else {
-            return null;
-        }
-    }
-
-    // This method can be used by our sub-servlets to get the request JSON body as a JsonObject (generic parsing)
-    protected static JsonObject getJsonRequestBody(HttpServletRequest req) throws IOException {
-        // Here again we simply rely on the Gson library, giving it a Reader opened on the request InputStream
-        // The request is assumed to be a JSON object { ... } with this method
-        return new JsonParser()
-                .parse(req.getReader())
-                .getAsJsonObject();
-    }
-
-    // This method can be used by our sub-servlets to get the request JSON body as an object
-    // It will parse the request and convert it to an instance of the specified type
-    // This is a generic method: the return type T depends on ("is bound to") the second parameter
-    protected static <T> T getJsonRequestBody(HttpServletRequest req, Class<T> type) throws IOException {
-        // We used the Gson library for parsing
-        return GsonFactory.getGson().fromJson(req.getReader(), type);
     }
 
 }

@@ -9,9 +9,18 @@ import fr.ecp.sio.appenginedemo.model.Error;
  */
 public class ApiException extends Exception {
 
+    //TODO: clean import (static etc...)
+    //TODO: verifier portées
+    //TODO: ecrire API contrat
     private Error mError;
 
-    // TODO: doc
+    /**
+     * Exceptions specific of this API
+     *
+     * @param status  HTTP error code
+     * @param code    error type
+     * @param message details of the error
+     */
     public ApiException(int status, String code, String message) {
         super(message);
         // When the exception is created, prepare an Error object that will be sent to the client

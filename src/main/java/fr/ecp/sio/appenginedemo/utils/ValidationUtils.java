@@ -30,4 +30,9 @@ public class ValidationUtils {
         return EmailValidator.getInstance(false).isValid(email);
     }
 
+    public static boolean validateMessage(String text) {
+        // Here we use a library from Apache Commons to do the validation
+        return text != null && text.length() > 20 && text.length() < 500;
+    }
+
 }

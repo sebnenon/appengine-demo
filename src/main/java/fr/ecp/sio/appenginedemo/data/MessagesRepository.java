@@ -39,7 +39,21 @@ public class MessagesRepository {
     }
 
     // TODO: doc
-    public static void insertMessage(Message message) {
+    public static List<Message> getMessagesFrom(long id) {
+        // Same as above, with an author id, returns multiple results as a list
+        List<Message> msglist = getMessages();
+        List<Message> returnlist = null;
+
+        for (Message msg : msglist) {
+            if (msg.user.get().id == id) {
+                returnlist.add(msg);
+            }
+        }
+        return returnlist;
+    }
+
+    // TODO: doc
+    public static void saveMessage(Message message) {
         // Persisting an entity is just a save() query
         message.id = ObjectifyService.ofy()
                 .save()

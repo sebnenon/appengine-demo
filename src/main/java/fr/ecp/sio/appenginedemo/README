@@ -1,0 +1,16 @@
+Quelques précisions concernant les choix faits dans l'API
+=========================================================
+
+
+1) Blobstore + ImageService
+Cette combinaison permet de contourner le blocage de Google Cloud Storage qui impose de donner toutes ses coordonnées
+(y compris bancaires) pour créer un bucket.
+
+2) Un utilisateur qui récupère un objet User autre que lui ne voit que le login, l'avatar et l'id.
+
+3) Un utilisateur ne peut lire que les messages des utilisateurs auxquels il est abonné.
+
+4) La liste des utilisateurs est en revanche publique.
+
+5) La gestion des relations (un)follow se fait via l'UserServlet, de même que l'édition du profil
+
