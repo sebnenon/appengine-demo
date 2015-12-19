@@ -43,7 +43,6 @@ public class MessagesServlet extends JsonServlet {
             return MessagesRepository.getMessagesFrom(authorid);
         }
         // Default: get the messages of the followed people
-        //TODO: manage cursor
         List<Message> returnlist = null;
         for (User usr : UsersRepository.getFollowers(currentUser.id, 50, null).users) {
             returnlist.addAll(MessagesRepository.getMessagesFrom(usr.id));

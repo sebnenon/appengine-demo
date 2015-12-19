@@ -9,9 +9,6 @@ import fr.ecp.sio.appenginedemo.model.Error;
  */
 public class ApiException extends Exception {
 
-    //TODO: clean import (static etc...)
-    //TODO: verifier portées
-    //TODO: ecrire API contrat
     private Error mError;
 
     /**

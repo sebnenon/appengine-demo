@@ -26,7 +26,6 @@ public class UsersRepository {
         ObjectifyService.register(Follower.class);
     }
 
-    // TODO: doc
     public static User getUserByLogin(final String login) {
         // We can add filter of a property if this property has the @Index annotation in the model class
         // first() returns only one result
@@ -38,7 +37,6 @@ public class UsersRepository {
                 .now();
     }
 
-    // TODO: doc
     public static User getUserByEmail(final String email) {
         return ObjectifyService.ofy()
                 .load()
@@ -48,7 +46,6 @@ public class UsersRepository {
                 .now();
     }
 
-    // TODO: doc
     public static User getUser(long id) {
         return ObjectifyService.ofy()
                 .load()
@@ -57,7 +54,6 @@ public class UsersRepository {
                 .now();
     }
 
-    // TODO: doc
     public static UsersList getUsers() {
         return new UsersList(
                 ObjectifyService.ofy()
@@ -68,7 +64,6 @@ public class UsersRepository {
         );
     }
 
-    // TODO: doc, verify if usefull
     public static String getAvatarFromBlob(String blob) {
         User usr = ObjectifyService.ofy()
                 .load()
@@ -79,13 +74,11 @@ public class UsersRepository {
         return usr.avatar;
     }
 
-    // TODO: doc
     public static long allocateNewId() {
         // Sometime we need to allocate an id before persisting, the library allows it
         return new ObjectifyFactory().allocateId(User.class).getId();
     }
 
-    // TODO: doc
     public static void updateAvatar(User user, String blobkey, String url) {
         user.blobkey = blobkey;
         user.avatar = url;
@@ -96,7 +89,6 @@ public class UsersRepository {
                 .getId();
     }
 
-    // TODO: doc
     public static void saveUser(User user) {
         user.id = ObjectifyService.ofy()
                 .save()
@@ -105,8 +97,6 @@ public class UsersRepository {
                 .getId();
     }
 
-    // DONE: delete also the relationships
-    // TODO: doc
     public static void deleteUser(long id) {
         ObjectifyService.ofy()
                 .delete()
@@ -125,7 +115,6 @@ public class UsersRepository {
                 .now();
     }
 
-    //TODO: doc
     public static User obfuscatedUser(User user) {
         User obUser = new User();
         obUser.id = user.id;
@@ -254,7 +243,6 @@ public class UsersRepository {
 
     }
 
-    // TODO: doc
     public static class UsersList {
 
         public final List<User> users;
