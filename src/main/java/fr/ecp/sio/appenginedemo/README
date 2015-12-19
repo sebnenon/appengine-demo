@@ -4,6 +4,7 @@ Quelques précisions concernant les choix faits dans l'API
 
 1) Blobstore + ImageService
 Cette combinaison marche très bien chez moi, mais je n'ai pas pu faire fonctionner GCS (cf mail).
+Voir mail pour GCS
 
 2) Un utilisateur qui récupère un objet User autre que lui ne voit que le login, l'avatar et l'id.
 
